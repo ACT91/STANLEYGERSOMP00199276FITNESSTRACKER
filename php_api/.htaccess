@@ -1,0 +1,16 @@
+# Enable rewrite engine
+RewriteEngine On
+
+# Set base directory
+RewriteBase /fitness_tracker_api/
+
+# Allow direct access to API files
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Don't redirect if requesting actual PHP files
+RewriteCond %{REQUEST_URI} !\.php$
+
+# Redirect everything else to index.php
+RewriteRule ^(.*)$ index.php [L]
+

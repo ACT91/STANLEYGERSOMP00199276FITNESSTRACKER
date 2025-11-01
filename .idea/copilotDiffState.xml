@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CopilotDiffPersistence">
+    <option name="pendingDiffs">
+      <map>
+        <entry key="$PROJECT_DIR$/app/src/main/java/com/example/stanleygersomp00199276fitnesstracker/network/RetrofitClient.kt">
+          <value>
+            <PendingDiffInfo>
+              <option name="filePath" value="$PROJECT_DIR$/app/src/main/java/com/example/stanleygersomp00199276fitnesstracker/network/RetrofitClient.kt" />
+              <option name="originalContent" value="package com.example.stanleygersomp00199276fitnesstracker.network&#10;&#10;import okhttp3.OkHttpClient&#10;import okhttp3.logging.HttpLoggingInterceptor&#10;import retrofit2.Retrofit&#10;import retrofit2.converter.gson.GsonConverterFactory&#10;import java.util.concurrent.TimeUnit&#10;&#10;object RetrofitClient {&#10;&#10;    // IMPORTANT: For physical device testing, ensure this IP is reachable from your phone&#10;    private const val BASE_URL = &quot;http://10.223.187.222/fitness_tracker_api/api/&quot;&#10;&#10;    private val loggingInterceptor = HttpLoggingInterceptor().apply {&#10;        level = HttpLoggingInterceptor.Level.BODY&#10;    }&#10;&#10;    private val okHttpClient = OkHttpClient.Builder()&#10;        .addInterceptor(loggingInterceptor)&#10;        .connectTimeout(10, TimeUnit.SECONDS)&#10;        .readTimeout(10, TimeUnit.SECONDS)&#10;        .writeTimeout(10, TimeUnit.SECONDS)&#10;        .build()&#10;&#10;    private val retrofit = Retrofit.Builder()&#10;        .baseUrl(BASE_URL)&#10;        .client(okHttpClient)&#10;        .addConverterFactory(GsonConverterFactory.create())&#10;        .build()&#10;&#10;    val apiService: ApiService = retrofit.create(ApiService::class.java)&#10;}&#10;" />
+              <option name="updatedContent" value="package com.example.stanleygersomp00199276fitnesstracker.network&#10;&#10;import okhttp3.OkHttpClient&#10;import okhttp3.logging.HttpLoggingInterceptor&#10;import retrofit2.Retrofit&#10;import retrofit2.converter.gson.GsonConverterFactory&#10;import java.util.concurrent.TimeUnit&#10;&#10;object RetrofitClient {&#10;&#10;    // IMPORTANT: For physical device testing, ensure this IP is reachable from your phone&#10;    private const val BASE_URL = &quot;http://10.223.187.222/fitness_tracker_api/api/&quot;&#10;&#10;    private val loggingInterceptor = HttpLoggingInterceptor().apply {&#10;        level = HttpLoggingInterceptor.Level.BODY&#10;    }&#10;&#10;    private val okHttpClient = OkHttpClient.Builder()&#10;        .addInterceptor(loggingInterceptor)&#10;        .connectTimeout(10, TimeUnit.SECONDS)&#10;        .readTimeout(10, TimeUnit.SECONDS)&#10;        .writeTimeout(10, TimeUnit.SECONDS)&#10;        .build()&#10;&#10;    private val retrofit = Retrofit.Builder()&#10;        .baseUrl(BASE_URL)&#10;        .client(okHttpClient)&#10;        .addConverterFactory(GsonConverterFactory.create())&#10;        .build()&#10;&#10;    val apiService: ApiService = retrofit.create(ApiService::class.java)&#10;}&#10;" />
+            </PendingDiffInfo>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Gunmetal Green Theme -->
+    <color name="gunmetal_green">#333B30</color>
+    <color name="gunmetal_green_dark">#252B22</color>
+    <color name="gunmetal_green_light">#4A5446</color>
+
+    <!-- Primary colors -->
+    <color name="purple_200">#4A5446</color>
+    <color name="purple_500">#333B30</color>
+    <color name="purple_700">#252B22</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#333B30</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Accent colors -->
+    <color name="accent_green">#6B7D5A</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+</resources>
+
