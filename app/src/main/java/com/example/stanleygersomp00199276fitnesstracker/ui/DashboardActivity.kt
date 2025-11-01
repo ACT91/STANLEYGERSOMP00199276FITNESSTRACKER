@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.stanleygersomp00199276fitnesstracker.R
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityDashboardBinding
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
+import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 
 class DashboardActivity : AppCompatActivity() {
 
@@ -28,6 +29,8 @@ class DashboardActivity : AppCompatActivity() {
 
         // Inflate menu with profile icon and handle clicks
         binding.toolbar.inflateMenu(R.menu.menu_main)
+        // Tint toolbar/menu icons to white
+        ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile -> {

@@ -12,6 +12,7 @@ import com.example.stanleygersomp00199276fitnesstracker.models.WorkoutData
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
+import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.WorkoutViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -39,6 +40,8 @@ class AddWorkoutActivity : AppCompatActivity() {
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.toolbar.inflateMenu(R.menu.menu_main)
+        // Make toolbar/menu icons white
+        ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile -> {

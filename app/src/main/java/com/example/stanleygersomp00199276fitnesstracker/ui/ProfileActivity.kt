@@ -14,6 +14,7 @@ import com.example.stanleygersomp00199276fitnesstracker.models.UpdateProfileRequ
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
+import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.AuthViewModel
 
 class ProfileActivity : AppCompatActivity() {
@@ -55,6 +56,7 @@ class ProfileActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
+        ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
     }
 
     private fun loadUserData() {

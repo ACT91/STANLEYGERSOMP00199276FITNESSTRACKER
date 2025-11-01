@@ -1,10 +1,15 @@
 package com.example.stanleygersomp00199276fitnesstracker.ui
 
+import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityAboutBinding
+import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 
 class AboutActivity : AppCompatActivity() {
 
@@ -19,10 +24,37 @@ class AboutActivity : AppCompatActivity() {
 
         setupToolbar()
         loadCreatorImage()
+        setupGitHubButtons()
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
+        // Ensure toolbar icons and title are white
+        ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
+    }
+
+    private fun setupGitHubButtons() {
+        val profileUrl = "https://github.com/ACT91/"
+        val projectUrl = "https://github.com/ACT91/STANLEYGERSOMP00199276FITNESSTRACKER"
+
+        binding.root.findViewById<ImageButton>(com.example.stanleygersomp00199276fitnesstracker.R.id.btnGitHubProfile)
+            .setOnClickListener {
+                openUrl(profileUrl)
+            }
+
+        binding.root.findViewById<ImageButton>(com.example.stanleygersomp00199276fitnesstracker.R.id.btnGitHubProject)
+            .setOnClickListener {
+                openUrl(projectUrl)
+            }
+    }
+
+    private fun openUrl(url: String) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun loadCreatorImage() {

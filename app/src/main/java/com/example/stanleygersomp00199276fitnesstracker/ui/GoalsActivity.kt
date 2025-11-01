@@ -13,6 +13,7 @@ import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityGoal
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
+import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.GoalViewModel
 
 class GoalsActivity : AppCompatActivity() {
@@ -41,6 +42,8 @@ class GoalsActivity : AppCompatActivity() {
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
         binding.toolbar.inflateMenu(R.menu.menu_main)
+        // Tint icons white
+        ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.action_profile -> {
