@@ -37,7 +37,7 @@ STANLEYGERSOMP00199276FITNESSTRACKER/
 └── README.md                             # This file
 ```
 
-## Quick start
+## Quick start hehe
 
 Requirements:
 - Android Studio (Arctic Fox or later recommended)
