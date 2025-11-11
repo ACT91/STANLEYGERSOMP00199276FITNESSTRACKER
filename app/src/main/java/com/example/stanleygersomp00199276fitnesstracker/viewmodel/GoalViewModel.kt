@@ -19,6 +19,12 @@ class GoalViewModel : ViewModel() {
     private val _createGoalResult = MutableLiveData<Resource<FitnessGoal>>()
     val createGoalResult: LiveData<Resource<FitnessGoal>> = _createGoalResult
 
+    private val _deleteGoalResult = MutableLiveData<Resource<Boolean>>()
+    val deleteGoalResult: LiveData<Resource<Boolean>> = _deleteGoalResult
+
+    private val _updateGoalResult = MutableLiveData<Resource<FitnessGoal>>()
+    val updateGoalResult: LiveData<Resource<FitnessGoal>> = _updateGoalResult
+
     fun getUserGoals(token: String, userId: Int) {
         viewModelScope.launch {
             _goals.value = Resource.Loading()
@@ -30,6 +36,20 @@ class GoalViewModel : ViewModel() {
         viewModelScope.launch {
             _createGoalResult.value = Resource.Loading()
             _createGoalResult.value = repository.createGoal(token, goal)
+        }
+    }
+
+    fun deleteGoal(token: String, goalId: Int) {
+        viewModelScope.launch {
+            _deleteGoalResult.value = Resource.Loading()
+            _deleteGoalResult.value = repository.deleteGoal(token, goalId)
+        }
+    }
+
+    fun updateGoal(token: String, goalId: Int, goal: FitnessGoal) {
+        viewModelScope.launch {
+            _updateGoalResult.value = Resource.Loading()
+            _updateGoalResult.value = repository.updateGoal(token, goalId, goal)
         }
     }
 }

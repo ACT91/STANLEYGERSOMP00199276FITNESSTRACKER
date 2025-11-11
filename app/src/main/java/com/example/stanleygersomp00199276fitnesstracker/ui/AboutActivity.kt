@@ -24,7 +24,7 @@ class AboutActivity : AppCompatActivity() {
 
         setupToolbar()
         loadCreatorImage()
-        setupGitHubButtons()
+
     }
 
     private fun setupToolbar() {
@@ -33,20 +33,7 @@ class AboutActivity : AppCompatActivity() {
         ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
     }
 
-    private fun setupGitHubButtons() {
-        val profileUrl = "https://github.com/ACT91/"
-        val projectUrl = "https://github.com/ACT91/STANLEYGERSOMP00199276FITNESSTRACKER"
 
-        binding.root.findViewById<ImageButton>(com.example.stanleygersomp00199276fitnesstracker.R.id.btnGitHubProfile)
-            .setOnClickListener {
-                openUrl(profileUrl)
-            }
-
-        binding.root.findViewById<ImageButton>(com.example.stanleygersomp00199276fitnesstracker.R.id.btnGitHubProject)
-            .setOnClickListener {
-                openUrl(projectUrl)
-            }
-    }
 
     private fun openUrl(url: String) {
         try {

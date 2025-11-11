@@ -25,7 +25,7 @@ if (!$input) {
 }
 
 // Validate required fields
-$requiredFields = ['email', 'password', 'name', 'age', 'weight', 'height'];
+$requiredFields = ['email', 'password', 'name', 'age'];
 foreach ($requiredFields as $field) {
     if (!isset($input[$field]) || empty($input[$field])) {
         http_response_code(400);
@@ -42,8 +42,8 @@ $email = sanitizeInput($input['email']);
 $password = $input['password'];
 $name = sanitizeInput($input['name']);
 $age = intval($input['age']);
-$weight = floatval($input['weight']);
-$height = floatval($input['height']);
+$weight = isset($input['weight']) && !empty($input['weight']) ? floatval($input['weight']) : null;
+$height = isset($input['height']) && !empty($input['height']) ? floatval($input['height']) : null;
 
 // Validate email
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -90,7 +90,7 @@ $passwordHash = password_hash($password, PASSWORD_BCRYPT);
 
 // Insert new user
 $stmt = $conn->prepare("INSERT INTO users (email, password_hash, name, age, weight, height) VALUES (?, ?, ?, ?, ?, ?)");
-$stmt->bind_param("sssiss", $email, $passwordHash, $name, $age, $weight, $height);
+$stmt->bind_param("sssidd", $email, $passwordHash, $name, $age, $weight, $height);
 
 if ($stmt->execute()) {
     $userId = $conn->insert_id;

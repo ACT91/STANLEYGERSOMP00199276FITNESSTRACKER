@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
 
     // IMPORTANT: For physical device testing, ensure this IP is reachable from your phone
-    private const val BASE_URL = "http://10.223.187.222/fitness_tracker_api/api/"
+    private const val BASE_URL = "http://192.168.8.250/fitness_tracker_api/api/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

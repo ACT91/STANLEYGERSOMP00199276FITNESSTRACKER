@@ -12,6 +12,7 @@ import com.example.stanleygersomp00199276fitnesstracker.adapters.GoalAdapter
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityGoalsBinding
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
+import com.example.stanleygersomp00199276fitnesstracker.utils.RecyclerViewAnimator
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
 import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.GoalViewModel
@@ -39,37 +40,52 @@ class GoalsActivity : AppCompatActivity() {
         loadGoals()
     }
 
+    override fun onResume() {
+        super.onResume()
+        loadGoals() // Reload goals when returning from AddGoalActivity
+    }
+
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
-        binding.toolbar.inflateMenu(R.menu.menu_main)
-        // Tint icons white
+        // Remove menu - only back button needed
         ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
-        binding.toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_profile -> {
-                    startActivity(android.content.Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                R.id.action_about -> {
-                    startActivity(android.content.Intent(this, AboutActivity::class.java))
-                    true
-                }
-                else -> false
-            }
-        }
     }
 
     private fun setupRecyclerView() {
-        goalAdapter = GoalAdapter()
+        goalAdapter = GoalAdapter(
+            onEditClick = { goal ->
+                // Launch EditGoalActivity with goal data
+                val intent = android.content.Intent(this, EditGoalActivity::class.java).apply {
+                    putExtra("GOAL_ID", goal.id)
+                    putExtra("GOAL_TYPE", goal.goalType)
+                    putExtra("TARGET_VALUE", goal.targetValue)
+                    putExtra("CURRENT_VALUE", goal.currentValue)
+                    putExtra("DEADLINE", goal.deadline)
+                }
+                startActivity(intent)
+            },
+            onDeleteClick = { goal ->
+                deleteGoal(goal.id)
+            }
+        )
         binding.recyclerViewGoals.apply {
             layoutManager = LinearLayoutManager(this@GoalsActivity)
             adapter = goalAdapter
+            // Apply animations
+            RecyclerViewAnimator.applySlideInAnimation(this)
+        }
+    }
+
+    private fun deleteGoal(goalId: Int) {
+        val token = sessionManager.getAuthToken()
+        if (token != null) {
+            viewModel.deleteGoal(token, goalId)
         }
     }
 
     private fun setupListeners() {
         binding.btnAddGoal.setOnClickListener {
-            Toast.makeText(this, "Add Goal feature - Implement dialog or activity", Toast.LENGTH_SHORT).show()
+            startActivity(android.content.Intent(this, AddGoalActivity::class.java))
         }
     }
 
@@ -108,6 +124,19 @@ class GoalsActivity : AppCompatActivity() {
                     val userMessage = ErrorMessageHelper.getUserFriendlyMessage(result.message)
                     Toast.makeText(this, userMessage, Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+
+        viewModel.deleteGoalResult.observe(this) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    Toast.makeText(this, "Goal deleted successfully", Toast.LENGTH_SHORT).show()
+                    loadGoals() // Reload goals
+                }
+                is Resource.Error -> {
+                    Toast.makeText(this, "Failed to delete goal", Toast.LENGTH_SHORT).show()
+                }
+                else -> {}
             }
         }
     }

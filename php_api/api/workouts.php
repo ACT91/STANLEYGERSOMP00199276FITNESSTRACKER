@@ -75,6 +75,7 @@ function handleGetWorkouts($conn, $userData) {
         $workout = [
             'id' => $row['id'],
             'userId' => $row['user_id'],
+            'goalId' => $row['goal_id'],
             'workoutType' => $row['workout_type'],
             'startTime' => $row['start_time'],
             'endTime' => $row['end_time'],
@@ -150,6 +151,7 @@ function handleCreateWorkout($conn, $userData) {
     }
 
     $userId = intval($input['userId']);
+    $goalId = isset($input['goalId']) ? intval($input['goalId']) : null;
     $workoutType = sanitizeInput($input['workoutType']);
     $startTime = sanitizeInput($input['startTime']);
     $endTime = isset($input['endTime']) ? sanitizeInput($input['endTime']) : $startTime;
@@ -167,8 +169,8 @@ function handleCreateWorkout($conn, $userData) {
     }
 
     // Insert main workout
-    $stmt = $conn->prepare("INSERT INTO workouts (user_id, workout_type, start_time, end_time, duration, calories_burned) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssis", $userId, $workoutType, $startTime, $endTime, $duration, $calories);
+    $stmt = $conn->prepare("INSERT INTO workouts (user_id, goal_id, workout_type, start_time, end_time, duration, calories_burned) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iisssid", $userId, $goalId, $workoutType, $startTime, $endTime, $duration, $calories);
 
     if (!$stmt->execute()) {
         http_response_code(500);
@@ -217,6 +219,11 @@ function handleCreateWorkout($conn, $userData) {
             $detailStmt->execute();
             $detailStmt->close();
             break;
+    }
+
+    // Update goal progress if goal_id is provided
+    if ($goalId) {
+        updateGoalProgress($conn, $goalId, $input);
     }
 
     http_response_code(201);
@@ -298,6 +305,66 @@ function handleUpdateWorkout($conn, $userData) {
         'status' => 'error',
         'message' => 'Update not implemented yet'
     ]);
+}
+
+// Helper function to update goal progress and create achievements
+function updateGoalProgress($conn, $goalId, $workoutData) {
+    // Get goal details
+    $stmt = $conn->prepare("SELECT * FROM fitness_goals WHERE id = ? AND achieved = FALSE");
+    $stmt->bind_param("i", $goalId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        $stmt->close();
+        return; // Goal not found or already achieved
+    }
+
+    $goal = $result->fetch_assoc();
+    $stmt->close();
+
+    $goalType = $goal['goal_type'];
+    $targetValue = floatval($goal['target_value']);
+    $currentValue = floatval($goal['current_value']);
+
+    // Calculate progress based on goal type
+    $progressIncrement = 0;
+    switch ($goalType) {
+        case 'workout_count':
+            $progressIncrement = 1; // Each workout counts as 1
+            break;
+        case 'distance':
+            $progressIncrement = isset($workoutData['distance']) ? floatval($workoutData['distance']) : 0;
+            break;
+        case 'calories':
+            $progressIncrement = isset($workoutData['caloriesBurned']) ? floatval($workoutData['caloriesBurned']) : 0;
+            break;
+        case 'duration':
+            $progressIncrement = isset($workoutData['duration']) ? floatval($workoutData['duration']) : 0;
+            break;
+        default:
+            return; // Unknown goal type
+    }
+
+    $newValue = $currentValue + $progressIncrement;
+    $achieved = $newValue >= $targetValue;
+
+    // Update goal progress
+    $updateStmt = $conn->prepare("UPDATE fitness_goals SET current_value = ?, achieved = ? WHERE id = ?");
+    $updateStmt->bind_param("dii", $newValue, $achieved, $goalId);
+    $updateStmt->execute();
+    $updateStmt->close();
+
+    // If goal achieved, create achievement record
+    if ($achieved && !$goal['achieved']) {
+        $title = "Goal Achieved: " . ucfirst(str_replace('_', ' ', $goalType));
+        $description = "Completed " . $goalType . " goal of " . $targetValue . "!";
+
+        $achStmt = $conn->prepare("INSERT INTO achievements (user_id, goal_id, title, description) VALUES (?, ?, ?, ?)");
+        $achStmt->bind_param("iiss", $goal['user_id'], $goalId, $title, $description);
+        $achStmt->execute();
+        $achStmt->close();
+    }
 }
 ?>
 

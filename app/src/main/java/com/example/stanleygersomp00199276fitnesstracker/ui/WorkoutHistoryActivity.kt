@@ -13,6 +13,7 @@ import com.example.stanleygersomp00199276fitnesstracker.adapters.WorkoutAdapter
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityWorkoutHistoryBinding
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
+import com.example.stanleygersomp00199276fitnesstracker.utils.RecyclerViewAnimator
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
 import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.WorkoutViewModel
@@ -54,6 +55,8 @@ class WorkoutHistoryActivity : AppCompatActivity() {
         binding.recyclerViewWorkouts.apply {
             layoutManager = LinearLayoutManager(this@WorkoutHistoryActivity)
             adapter = workoutAdapter
+            // Apply animations
+            RecyclerViewAnimator.applySlideInAnimation(this)
         }
     }
 

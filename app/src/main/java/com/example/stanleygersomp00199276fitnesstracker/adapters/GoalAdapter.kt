@@ -5,10 +5,16 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stanleygersomp00199276fitnesstracker.R
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ItemGoalBinding
 import com.example.stanleygersomp00199276fitnesstracker.models.FitnessGoal
 
-class GoalAdapter : ListAdapter<FitnessGoal, GoalAdapter.GoalViewHolder>(GoalDiffCallback()) {
+class GoalAdapter(
+    private val onEditClick: (FitnessGoal) -> Unit = {},
+    private val onDeleteClick: (FitnessGoal) -> Unit = {}
+) : ListAdapter<FitnessGoal, GoalAdapter.GoalViewHolder>(GoalDiffCallback()) {
+
+    private var lastPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GoalViewHolder {
         val binding = ItemGoalBinding.inflate(
@@ -16,15 +22,31 @@ class GoalAdapter : ListAdapter<FitnessGoal, GoalAdapter.GoalViewHolder>(GoalDif
             parent,
             false
         )
-        return GoalViewHolder(binding)
+        return GoalViewHolder(binding, onEditClick, onDeleteClick)
     }
 
     override fun onBindViewHolder(holder: GoalViewHolder, position: Int) {
         holder.bind(getItem(position))
+
+        // Apply animation
+        if (position > lastPosition) {
+            holder.itemView.alpha = 0f
+            holder.itemView.scaleX = 0.8f
+            holder.itemView.scaleY = 0.8f
+            holder.itemView.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(250)
+                .start()
+            lastPosition = position
+        }
     }
 
     class GoalViewHolder(
-        private val binding: ItemGoalBinding
+        private val binding: ItemGoalBinding,
+        private val onEditClick: (FitnessGoal) -> Unit,
+        private val onDeleteClick: (FitnessGoal) -> Unit
     ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(goal: FitnessGoal) {
@@ -53,6 +75,15 @@ class GoalAdapter : ListAdapter<FitnessGoal, GoalAdapter.GoalViewHolder>(GoalDif
                 binding.tvProgress.text = "Progress: $progress%"
             } else {
                 binding.layoutProgress.visibility = android.view.View.GONE
+            }
+
+            // Set click listeners for edit and delete buttons
+            binding.btnEditGoal.setOnClickListener {
+                onEditClick(goal)
+            }
+
+            binding.btnDeleteGoal.setOnClickListener {
+                onDeleteClick(goal)
             }
         }
     }

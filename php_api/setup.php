@@ -187,78 +187,7 @@ try {
             throw new Exception("Error creating users table: " . $conn->error);
         }
 
-        // 2. Workouts table
-        echo "<div class='step'>📋 Creating workouts table...</div>";
-        $sql = "CREATE TABLE IF NOT EXISTS workouts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            user_id INT NOT NULL,
-            workout_type VARCHAR(50) NOT NULL,
-            start_time DATETIME NOT NULL,
-            end_time DATETIME,
-            duration INT NOT NULL,
-            calories_burned DOUBLE NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )";
-        if ($conn->query($sql)) {
-            echo "<div class='success'>✅ Workouts table created</div>";
-            $tables_created++;
-        } else {
-            throw new Exception("Error creating workouts table: " . $conn->error);
-        }
-
-        // 3. Running workouts table
-        echo "<div class='step'>📋 Creating running_workouts table...</div>";
-        $sql = "CREATE TABLE IF NOT EXISTS running_workouts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            workout_id INT NOT NULL,
-            distance DOUBLE NOT NULL,
-            average_pace DOUBLE NOT NULL,
-            route_data TEXT,
-            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
-        )";
-        if ($conn->query($sql)) {
-            echo "<div class='success'>✅ Running workouts table created</div>";
-            $tables_created++;
-        } else {
-            throw new Exception("Error creating running_workouts table: " . $conn->error);
-        }
-
-        // 4. Weightlifting workouts table
-        echo "<div class='step'>📋 Creating weightlifting_workouts table...</div>";
-        $sql = "CREATE TABLE IF NOT EXISTS weightlifting_workouts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            workout_id INT NOT NULL,
-            exercise_name VARCHAR(255) NOT NULL,
-            total_sets INT NOT NULL,
-            total_reps INT NOT NULL,
-            max_weight DOUBLE NOT NULL,
-            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
-        )";
-        if ($conn->query($sql)) {
-            echo "<div class='success'>✅ Weightlifting workouts table created</div>";
-            $tables_created++;
-        } else {
-            throw new Exception("Error creating weightlifting_workouts table: " . $conn->error);
-        }
-
-        // 5. Cycling workouts table
-        echo "<div class='step'>📋 Creating cycling_workouts table...</div>";
-        $sql = "CREATE TABLE IF NOT EXISTS cycling_workouts (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            workout_id INT NOT NULL,
-            distance DOUBLE NOT NULL,
-            average_speed DOUBLE NOT NULL,
-            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
-        )";
-        if ($conn->query($sql)) {
-            echo "<div class='success'>✅ Cycling workouts table created</div>";
-            $tables_created++;
-        } else {
-            throw new Exception("Error creating cycling_workouts table: " . $conn->error);
-        }
-
-        // 6. Fitness goals table
+        // 2. Fitness goals table (MUST be created before workouts due to foreign key)
         echo "<div class='step'>📋 Creating fitness_goals table...</div>";
         $sql = "CREATE TABLE IF NOT EXISTS fitness_goals (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -278,10 +207,104 @@ try {
             throw new Exception("Error creating fitness_goals table: " . $conn->error);
         }
 
+        // 3. Workouts table (with goal_id foreign key)
+        echo "<div class='step'>📋 Creating workouts table...</div>";
+        $sql = "CREATE TABLE IF NOT EXISTS workouts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            goal_id INT,
+            workout_type VARCHAR(50) NOT NULL,
+            start_time DATETIME NOT NULL,
+            end_time DATETIME,
+            duration INT NOT NULL,
+            calories_burned DOUBLE NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (goal_id) REFERENCES fitness_goals(id) ON DELETE SET NULL
+        )";
+        if ($conn->query($sql)) {
+            echo "<div class='success'>✅ Workouts table created</div>";
+            $tables_created++;
+        } else {
+            throw new Exception("Error creating workouts table: " . $conn->error);
+        }
+
+        // 4. Running workouts table
+        echo "<div class='step'>📋 Creating running_workouts table...</div>";
+        $sql = "CREATE TABLE IF NOT EXISTS running_workouts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            workout_id INT NOT NULL,
+            distance DOUBLE NOT NULL,
+            average_pace DOUBLE NOT NULL,
+            route_data TEXT,
+            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
+        )";
+        if ($conn->query($sql)) {
+            echo "<div class='success'>✅ Running workouts table created</div>";
+            $tables_created++;
+        } else {
+            throw new Exception("Error creating running_workouts table: " . $conn->error);
+        }
+
+        // 5. Weightlifting workouts table
+        echo "<div class='step'>📋 Creating weightlifting_workouts table...</div>";
+        $sql = "CREATE TABLE IF NOT EXISTS weightlifting_workouts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            workout_id INT NOT NULL,
+            exercise_name VARCHAR(255) NOT NULL,
+            total_sets INT NOT NULL,
+            total_reps INT NOT NULL,
+            max_weight DOUBLE NOT NULL,
+            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
+        )";
+        if ($conn->query($sql)) {
+            echo "<div class='success'>✅ Weightlifting workouts table created</div>";
+            $tables_created++;
+        } else {
+            throw new Exception("Error creating weightlifting_workouts table: " . $conn->error);
+        }
+
+        // 6. Cycling workouts table
+        echo "<div class='step'>📋 Creating cycling_workouts table...</div>";
+        $sql = "CREATE TABLE IF NOT EXISTS cycling_workouts (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            workout_id INT NOT NULL,
+            distance DOUBLE NOT NULL,
+            average_speed DOUBLE NOT NULL,
+            FOREIGN KEY (workout_id) REFERENCES workouts(id) ON DELETE CASCADE
+        )";
+        if ($conn->query($sql)) {
+            echo "<div class='success'>✅ Cycling workouts table created</div>";
+            $tables_created++;
+        } else {
+            throw new Exception("Error creating cycling_workouts table: " . $conn->error);
+        }
+
+        // 7. Achievements table
+        echo "<div class='step'>📋 Creating achievements table...</div>";
+        $sql = "CREATE TABLE IF NOT EXISTS achievements (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
+            goal_id INT NOT NULL,
+            title VARCHAR(255) NOT NULL,
+            description TEXT,
+            achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+            FOREIGN KEY (goal_id) REFERENCES fitness_goals(id) ON DELETE CASCADE
+        )";
+        if ($conn->query($sql)) {
+            echo "<div class='success'>✅ Achievements table created</div>";
+            $tables_created++;
+        } else {
+            throw new Exception("Error creating achievements table: " . $conn->error);
+        }
+
         // Create indexes
         echo "<div class='step'>📑 Creating indexes for performance...</div>";
         $conn->query("CREATE INDEX idx_workouts_user_id ON workouts(user_id)");
+        $conn->query("CREATE INDEX idx_workouts_goal_id ON workouts(goal_id)");
         $conn->query("CREATE INDEX idx_goals_user_id ON fitness_goals(user_id)");
+        $conn->query("CREATE INDEX idx_achievements_user_id ON achievements(user_id)");
         echo "<div class='success'>✅ Indexes created</div>";
 
         // Success summary
@@ -295,9 +318,15 @@ try {
                 <h3>✅ Setup Summary:</h3>
                 <ul>
                     <li>✅ Database created</li>
-                    <li>✅ All 6 tables created</li>
+                    <li>✅ Users table</li>
+                    <li>✅ Fitness Goals table</li>
+                    <li>✅ Workouts table (with goal linking)</li>
+                    <li>✅ Running workouts table</li>
+                    <li>✅ Weightlifting workouts table</li>
+                    <li>✅ Cycling workouts table</li>
+                    <li>✅ Achievements table</li>
                     <li>✅ Foreign keys configured</li>
-                    <li>✅ Indexes created</li>
+                    <li>✅ Performance indexes created</li>
                     <li>✅ Ready to use!</li>
                 </ul>
               </div>";
@@ -305,11 +334,13 @@ try {
         echo "<div class='step'>
                 <h3>🚀 Next Steps:</h3>
                 <ol>
+                    <li>Update RetrofitClient.kt BASE_URL to point to your API</li>
                     <li>Run the Android app</li>
                     <li>Register a new user</li>
-                    <li>Start tracking your fitness!</li>
+                    <li>Create goals and track workouts!</li>
                 </ol>
                 <a href='test.php' class='btn'>🧪 Test API</a>
+                <a href='index.php' class='btn'>📖 API Documentation</a>
                 <a href='setup.php' class='btn'>🔄 Refresh</a>
               </div>";
     }

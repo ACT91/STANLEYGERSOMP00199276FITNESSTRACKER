@@ -9,20 +9,25 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.stanleygersomp00199276fitnesstracker.R
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ActivityAddWorkoutBinding
 import com.example.stanleygersomp00199276fitnesstracker.models.WorkoutData
+import com.example.stanleygersomp00199276fitnesstracker.models.FitnessGoal
 import com.example.stanleygersomp00199276fitnesstracker.repository.Resource
 import com.example.stanleygersomp00199276fitnesstracker.utils.ErrorMessageHelper
 import com.example.stanleygersomp00199276fitnesstracker.utils.SessionManager
 import com.example.stanleygersomp00199276fitnesstracker.utils.ToolbarUtils
 import com.example.stanleygersomp00199276fitnesstracker.viewmodel.WorkoutViewModel
+import com.example.stanleygersomp00199276fitnesstracker.viewmodel.GoalViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 class AddWorkoutActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAddWorkoutBinding
-    private val viewModel: WorkoutViewModel by viewModels()
+    private val workoutViewModel: WorkoutViewModel by viewModels()
+    private val goalViewModel: GoalViewModel by viewModels()
     private lateinit var sessionManager: SessionManager
     private var selectedWorkoutType = "running"
+    private var userGoals = listOf<FitnessGoal>()
+    private var selectedGoalId: Int? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,23 +39,33 @@ class AddWorkoutActivity : AppCompatActivity() {
         setupToolbar()
         setupWorkoutTypeDropdown()
         setupListeners()
+        loadUserGoals()
         observeViewModel()
+    }
+
+    private fun loadUserGoals() {
+        val user = sessionManager.getUser()
+        val token = sessionManager.getAuthToken()
+
+        if (user != null && token != null) {
+            goalViewModel.getUserGoals(token, user.id)
+        }
+    }
+
+    private fun setupGoalDropdown() {
+        val goalNames = userGoals.map { "${it.goalType} - ${it.targetValue}" }.toTypedArray()
+        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, goalNames)
+        binding.spinnerGoal.setAdapter(adapter)
+
+        binding.spinnerGoal.setOnItemClickListener { _, _, position, _ ->
+            selectedGoalId = userGoals[position].id
+        }
     }
 
     private fun setupToolbar() {
         binding.toolbar.setNavigationOnClickListener { finish() }
-        binding.toolbar.inflateMenu(R.menu.menu_main)
-        // Make toolbar/menu icons white
+        // Remove menu - only back button needed
         ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
-        binding.toolbar.setOnMenuItemClickListener { item ->
-            when (item.itemId) {
-                R.id.action_profile -> {
-                    startActivity(android.content.Intent(this, ProfileActivity::class.java))
-                    true
-                }
-                else -> false
-            }
-        }
     }
 
     private fun setupWorkoutTypeDropdown() {
@@ -110,6 +125,7 @@ class AddWorkoutActivity : AppCompatActivity() {
 
                 WorkoutData(
                     userId = user.id,
+                    goalId = selectedGoalId,
                     workoutType = selectedWorkoutType,
                     startTime = currentTime,
                     endTime = currentTime,
@@ -132,6 +148,7 @@ class AddWorkoutActivity : AppCompatActivity() {
 
                 WorkoutData(
                     userId = user.id,
+                    goalId = selectedGoalId,
                     workoutType = selectedWorkoutType,
                     startTime = currentTime,
                     endTime = currentTime,
@@ -154,6 +171,7 @@ class AddWorkoutActivity : AppCompatActivity() {
 
                 WorkoutData(
                     userId = user.id,
+                    goalId = selectedGoalId,
                     workoutType = selectedWorkoutType,
                     startTime = currentTime,
                     endTime = currentTime,
@@ -166,11 +184,26 @@ class AddWorkoutActivity : AppCompatActivity() {
             else -> return
         }
 
-        viewModel.createWorkout(token, workout)
+        workoutViewModel.createWorkout(token, workout)
     }
 
     private fun observeViewModel() {
-        viewModel.createWorkoutResult.observe(this) { result ->
+        // Observe goals loading
+        goalViewModel.goals.observe(this) { result ->
+            when (result) {
+                is Resource.Success -> {
+                    userGoals = result.data?.filter { !it.achieved } ?: emptyList()
+                    setupGoalDropdown()
+                }
+                is Resource.Error -> {
+                    Toast.makeText(this, "Failed to load goals", Toast.LENGTH_SHORT).show()
+                }
+                else -> {}
+            }
+        }
+
+        // Observe workout creation
+        workoutViewModel.createWorkoutResult.observe(this) { result ->
             when (result) {
                 is Resource.Loading -> {
                     binding.progressBar.visibility = View.VISIBLE

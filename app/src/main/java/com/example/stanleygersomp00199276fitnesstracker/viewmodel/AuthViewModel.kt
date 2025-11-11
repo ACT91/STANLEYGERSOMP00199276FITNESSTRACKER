@@ -30,13 +30,11 @@ class AuthViewModel : ViewModel() {
         email: String,
         password: String,
         name: String,
-        age: Int,
-        weight: Double,
-        height: Double
+        age: Int
     ) {
         viewModelScope.launch {
             _registerResult.value = Resource.Loading()
-            val userRegistration = UserRegistration(email, password, name, age, weight, height)
+            val userRegistration = UserRegistration(email, password, name, age)
             _registerResult.value = repository.register(userRegistration)
         }
     }

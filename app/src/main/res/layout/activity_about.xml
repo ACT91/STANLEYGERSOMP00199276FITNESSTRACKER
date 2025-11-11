@@ -35,15 +35,6 @@
             android:padding="24dp"
             android:gravity="center_horizontal">
 
-            <ImageView
-                android:id="@+id/ivCreatorImage"
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:layout_marginBottom="16dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="Creator Image"
-                tools:src="@android:drawable/ic_menu_gallery" />
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -95,30 +86,21 @@
                 android:layout_marginBottom="24dp"
                 android:gravity="center_vertical">
 
-                <ImageButton
-                    android:id="@+id/btnGitHubProfile"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_github"
-                    android:contentDescription="GitHub Profile"
-                    app:tint="@color/gunmetal_green"
-                    android:padding="6dp"
-                    android:layout_marginEnd="12dp" />
-
-                <ImageButton
-                    android:id="@+id/btnGitHubProject"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_github"
-                    android:contentDescription="GitHub Project"
-                    app:tint="@color/gunmetal_green"
-                    android:padding="6dp" />
-
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/ivCreatorImage"
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="Creator Image"
+                android:scaleType="centerCrop"
+                tools:src="@android:drawable/ic_menu_gallery" />
 
         </LinearLayout>
     </ScrollView>
+
+    <androidx.constraintlayout.widget.Guideline android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

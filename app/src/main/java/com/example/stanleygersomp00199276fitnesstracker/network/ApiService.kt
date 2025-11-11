@@ -56,6 +56,18 @@ interface ApiService {
         @Body goal: FitnessGoal
     ): Response<ApiResponse<FitnessGoal>>
 
+    @DELETE("goals.php")
+    suspend fun deleteGoal(
+        @Header("Authorization") token: String,
+        @Query("id") goalId: Int
+    ): Response<ApiResponse<Any>>
+
+    @GET("achievements.php")
+    suspend fun getUserAchievements(
+        @Header("Authorization") token: String,
+        @Query("user_id") userId: Int
+    ): Response<ApiResponse<List<Achievement>>>
+
     // New Profile endpoints
     @GET("get_profile.php")
     suspend fun getProfile(

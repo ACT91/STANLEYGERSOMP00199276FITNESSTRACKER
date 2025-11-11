@@ -4,6 +4,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -47,12 +50,33 @@
             android:exported="false" />
 
         <activity
+            android:name=".ui.AddGoalActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.EditGoalActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.AchievementsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.StatisticsActivity"
+            android:exported="false" />
+
+        <activity
             android:name=".ui.ProfileActivity"
             android:exported="false" />
 
         <activity
             android:name=".ui.AboutActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".ui.TrackWorkoutActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
 
     </application>
 

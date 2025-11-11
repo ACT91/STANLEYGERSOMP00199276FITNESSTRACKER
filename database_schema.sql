@@ -20,13 +20,15 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS workouts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
+    goal_id INT,
     workout_type VARCHAR(50) NOT NULL,
     start_time DATETIME NOT NULL,
     end_time DATETIME,
     duration INT NOT NULL,
     calories_burned DOUBLE NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (goal_id) REFERENCES fitness_goals(id) ON DELETE SET NULL
 );
 
 -- Running workouts table
@@ -72,7 +74,21 @@ CREATE TABLE IF NOT EXISTS fitness_goals (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- Achievements table (stores completed goals)
+CREATE TABLE IF NOT EXISTS achievements (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    goal_id INT NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    achieved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (goal_id) REFERENCES fitness_goals(id) ON DELETE CASCADE
+);
+
 -- Create indexes for better performance
 CREATE INDEX idx_workouts_user_id ON workouts(user_id);
+CREATE INDEX idx_workouts_goal_id ON workouts(goal_id);
 CREATE INDEX idx_goals_user_id ON fitness_goals(user_id);
+CREATE INDEX idx_achievements_user_id ON achievements(user_id);
 

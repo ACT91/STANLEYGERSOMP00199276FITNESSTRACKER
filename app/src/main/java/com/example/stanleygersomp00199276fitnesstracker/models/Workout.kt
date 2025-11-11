@@ -51,6 +51,7 @@ data class CyclingWorkout(
 data class WorkoutData(
     val id: Int = 0,
     val userId: Int,
+    val goalId: Int? = null,
     val workoutType: String,
     val startTime: String,
     val endTime: String? = null,

@@ -1,6 +1,5 @@
 package com.example.stanleygersomp00199276fitnesstracker.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -31,17 +30,13 @@ class RegisterActivity : AppCompatActivity() {
             val email = binding.etEmail.text.toString().trim()
             val password = binding.etPassword.text.toString().trim()
             val age = binding.etAge.text.toString().trim()
-            val weight = binding.etWeight.text.toString().trim()
-            val height = binding.etHeight.text.toString().trim()
 
-            if (validateInput(name, email, password, age, weight, height)) {
+            if (validateInput(name, email, password, age)) {
                 viewModel.register(
                     email = email,
                     password = password,
                     name = name,
-                    age = age.toInt(),
-                    weight = weight.toDouble(),
-                    height = height.toDouble()
+                    age = age.toInt()
                 )
             }
         }
@@ -55,9 +50,7 @@ class RegisterActivity : AppCompatActivity() {
         name: String,
         email: String,
         password: String,
-        age: String,
-        weight: String,
-        height: String
+        age: String
     ): Boolean {
         var isValid = true
 
@@ -87,20 +80,6 @@ class RegisterActivity : AppCompatActivity() {
             isValid = false
         } else {
             binding.tilAge.error = null
-        }
-
-        if (weight.isEmpty()) {
-            binding.tilWeight.error = "Weight is required"
-            isValid = false
-        } else {
-            binding.tilWeight.error = null
-        }
-
-        if (height.isEmpty()) {
-            binding.tilHeight.error = "Height is required"
-            isValid = false
-        } else {
-            binding.tilHeight.error = null
         }
 
         return isValid

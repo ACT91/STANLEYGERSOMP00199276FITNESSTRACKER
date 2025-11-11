@@ -29,6 +29,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
     case 'PUT':
         handleUpdateGoal($conn, $userData);
         break;
+    case 'DELETE':
+        handleDeleteGoal($conn, $userData);
+        break;
     default:
         http_response_code(405);
         echo json_encode([
@@ -201,12 +204,59 @@ function handleUpdateGoal($conn, $userData) {
         return;
     }
 
-    // Update goal
-    $currentValue = floatval($input['currentValue']);
-    $achieved = isset($input['achieved']) ? (bool)$input['achieved'] : false;
+    // Update goal - allow editing target value, deadline, and goal type
+    $goalType = isset($input['goalType']) ? sanitizeInput($input['goalType']) : null;
+    $targetValue = isset($input['targetValue']) ? floatval($input['targetValue']) : null;
+    $deadline = isset($input['deadline']) ? sanitizeInput($input['deadline']) : null;
+    $currentValue = isset($input['currentValue']) ? floatval($input['currentValue']) : null;
+    $achieved = isset($input['achieved']) ? (bool)$input['achieved'] : null;
 
-    $stmt = $conn->prepare("UPDATE fitness_goals SET current_value = ?, achieved = ? WHERE id = ?");
-    $stmt->bind_param("dii", $currentValue, $achieved, $goalId);
+    // Build dynamic update query
+    $updates = [];
+    $types = "";
+    $params = [];
+
+    if ($goalType !== null) {
+        $updates[] = "goal_type = ?";
+        $types .= "s";
+        $params[] = $goalType;
+    }
+    if ($targetValue !== null) {
+        $updates[] = "target_value = ?";
+        $types .= "d";
+        $params[] = $targetValue;
+    }
+    if ($deadline !== null) {
+        $updates[] = "deadline = ?";
+        $types .= "s";
+        $params[] = $deadline;
+    }
+    if ($currentValue !== null) {
+        $updates[] = "current_value = ?";
+        $types .= "d";
+        $params[] = $currentValue;
+    }
+    if ($achieved !== null) {
+        $updates[] = "achieved = ?";
+        $types .= "i";
+        $params[] = $achieved;
+    }
+
+    if (empty($updates)) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'No fields to update'
+        ]);
+        return;
+    }
+
+    $query = "UPDATE fitness_goals SET " . implode(", ", $updates) . " WHERE id = ?";
+    $types .= "i";
+    $params[] = $goalId;
+
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
 
     if ($stmt->execute()) {
         http_response_code(200);
@@ -219,6 +269,68 @@ function handleUpdateGoal($conn, $userData) {
         echo json_encode([
             'status' => 'error',
             'message' => 'Failed to update goal'
+        ]);
+    }
+
+    $stmt->close();
+}
+
+// Delete goal
+function handleDeleteGoal($conn, $userData) {
+    if (!isset($_GET['id'])) {
+        http_response_code(400);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Goal id is required'
+        ]);
+        return;
+    }
+
+    $goalId = intval($_GET['id']);
+
+    // Verify goal belongs to user
+    $stmt = $conn->prepare("SELECT user_id FROM fitness_goals WHERE id = ?");
+    $stmt->bind_param("i", $goalId);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows === 0) {
+        http_response_code(404);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Goal not found'
+        ]);
+        $stmt->close();
+        return;
+    }
+
+    $goal = $result->fetch_assoc();
+    $stmt->close();
+
+    if ($goal['user_id'] !== $userData['user_id']) {
+        http_response_code(403);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Forbidden'
+        ]);
+        return;
+    }
+
+    // Delete goal
+    $stmt = $conn->prepare("DELETE FROM fitness_goals WHERE id = ?");
+    $stmt->bind_param("i", $goalId);
+
+    if ($stmt->execute()) {
+        http_response_code(200);
+        echo json_encode([
+            'status' => 'success',
+            'message' => 'Goal deleted successfully'
+        ]);
+    } else {
+        http_response_code(500);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Failed to delete goal'
         ]);
     }
 

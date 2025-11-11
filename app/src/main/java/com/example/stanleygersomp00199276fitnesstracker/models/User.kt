@@ -5,8 +5,8 @@ data class User(
     val email: String,
     val name: String,
     val age: Int,
-    val weight: Double,
-    val height: Double,
+    val weight: Double? = null,
+    val height: Double? = null,
     val createdAt: String? = null
 )
 
@@ -14,9 +14,7 @@ data class UserRegistration(
     val email: String,
     val password: String,
     val name: String,
-    val age: Int,
-    val weight: Double,
-    val height: Double
+    val age: Int
 )
 
 data class UserLogin(

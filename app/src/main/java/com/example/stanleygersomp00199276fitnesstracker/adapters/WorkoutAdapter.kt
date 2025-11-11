@@ -5,12 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.example.stanleygersomp00199276fitnesstracker.R
 import com.example.stanleygersomp00199276fitnesstracker.databinding.ItemWorkoutBinding
 import com.example.stanleygersomp00199276fitnesstracker.models.WorkoutData
 
 class WorkoutAdapter(
     private val onDeleteClick: (Int) -> Unit
 ) : ListAdapter<WorkoutData, WorkoutAdapter.WorkoutViewHolder>(WorkoutDiffCallback()) {
+
+    private var lastPosition = -1
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WorkoutViewHolder {
         val binding = ItemWorkoutBinding.inflate(
@@ -23,6 +26,20 @@ class WorkoutAdapter(
 
     override fun onBindViewHolder(holder: WorkoutViewHolder, position: Int) {
         holder.bind(getItem(position))
+
+        // Apply animation
+        if (position > lastPosition) {
+            holder.itemView.alpha = 0f
+            holder.itemView.scaleX = 0.8f
+            holder.itemView.scaleY = 0.8f
+            holder.itemView.animate()
+                .alpha(1f)
+                .scaleX(1f)
+                .scaleY(1f)
+                .setDuration(250)
+                .start()
+            lastPosition = position
+        }
     }
 
     class WorkoutViewHolder(

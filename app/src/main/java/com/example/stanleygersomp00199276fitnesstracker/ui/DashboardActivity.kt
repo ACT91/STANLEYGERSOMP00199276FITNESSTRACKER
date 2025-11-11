@@ -33,10 +33,6 @@ class DashboardActivity : AppCompatActivity() {
         ToolbarUtils.tintToolbarIconsWhite(binding.toolbar)
         binding.toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
-                R.id.action_profile -> {
-                    startActivity(Intent(this, ProfileActivity::class.java))
-                    true
-                }
                 R.id.action_about -> {
                     // Navigate to AboutActivity when About menu item is selected
                     startActivity(Intent(this, AboutActivity::class.java))
@@ -72,12 +68,24 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, AddWorkoutActivity::class.java))
         }
 
+        binding.btnTrackWorkout.setOnClickListener {
+            startActivity(Intent(this, TrackWorkoutActivity::class.java))
+        }
+
         binding.btnViewWorkouts.setOnClickListener {
             startActivity(Intent(this, WorkoutHistoryActivity::class.java))
         }
 
         binding.btnViewGoals.setOnClickListener {
             startActivity(Intent(this, GoalsActivity::class.java))
+        }
+
+        binding.btnViewStatistics.setOnClickListener {
+            startActivity(Intent(this, StatisticsActivity::class.java))
+        }
+
+        binding.btnViewAchievements.setOnClickListener {
+            startActivity(Intent(this, AchievementsActivity::class.java))
         }
 
         binding.btnLogout.setOnClickListener {

@@ -190,4 +190,64 @@ class FitnessRepository {
             }
         }
     }
+
+    suspend fun deleteGoal(token: String, goalId: Int): Resource<Boolean> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.deleteGoal("Bearer $token", goalId)
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+                    if (apiResponse?.status == "success") {
+                        Resource.Success(true)
+                    } else {
+                        Resource.Error(apiResponse?.message ?: "Failed to delete goal")
+                    }
+                } else {
+                    Resource.Error("Server error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Resource.Error("Network error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun updateGoal(token: String, goalId: Int, goal: FitnessGoal): Resource<FitnessGoal> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.updateGoal("Bearer $token", goalId, goal)
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+                    if (apiResponse?.status == "success" && apiResponse.data != null) {
+                        Resource.Success(apiResponse.data)
+                    } else {
+                        Resource.Error(apiResponse?.message ?: "Failed to update goal")
+                    }
+                } else {
+                    Resource.Error("Server error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Resource.Error("Network error: ${e.message}")
+            }
+        }
+    }
+
+    suspend fun getUserAchievements(token: String, userId: Int): Resource<List<Achievement>> {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = apiService.getUserAchievements("Bearer $token", userId)
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+                    if (apiResponse?.status == "success") {
+                        Resource.Success(apiResponse.data ?: emptyList())
+                    } else {
+                        Resource.Error(apiResponse?.message ?: "Failed to fetch achievements")
+                    }
+                } else {
+                    Resource.Error("Server error: ${response.code()}")
+                }
+            } catch (e: Exception) {
+                Resource.Error("Network error: ${e.message}")
+            }
+        }
+    }
 }
